@@ -1985,6 +1985,7 @@ class TimelineBuilder {
         let formHtml = '';
         const componentType = (component?.type ?? '').toString();
         const isSocNbackLikeSubtask = (componentType === 'soc-subtask-nback-like' || componentType === 'nback-like');
+        const isBlockEditor = (componentType === 'block');
         const parameters = schema.parameters;
 
         for (const [paramName, paramDef] of Object.entries(parameters)) {
@@ -2073,8 +2074,37 @@ class TimelineBuilder {
                 if (paramName === 'match_key' || paramName === 'nonmatch_key') nbackParadigmAttr = 'data-nback-paradigm="2afc"';
             }
 
+            let cipResponseParadigmAttr = '';
+            if (isBlockEditor) {
+                if (paramName === 'cip_category_count' || paramName === 'cip_show_category_buttons' || /^cip_category_[1-7]_(label|key)$/.test(paramName)) {
+                    cipResponseParadigmAttr = 'data-cip-response-paradigm="categorization"';
+                }
+                if (
+                    paramName === 'nback_n'
+                    || paramName === 'nback_target_probability'
+                    || paramName === 'nback_stimulus_mode'
+                    || paramName === 'nback_stimulus_pool'
+                    || paramName === 'nback_render_mode'
+                    || paramName === 'nback_stimulus_template_html'
+                    || paramName === 'nback_stimulus_duration_ms'
+                    || paramName === 'nback_isi_duration_ms'
+                    || paramName === 'nback_trial_duration_ms'
+                    || paramName === 'nback_show_fixation_cross_between_trials'
+                    || paramName === 'nback_response_paradigm'
+                    || paramName === 'nback_response_device'
+                    || paramName === 'nback_go_key'
+                    || paramName === 'nback_match_key'
+                    || paramName === 'nback_nonmatch_key'
+                    || paramName === 'nback_show_buttons'
+                    || paramName === 'nback_show_feedback'
+                    || paramName === 'nback_feedback_duration_ms'
+                ) {
+                    cipResponseParadigmAttr = 'data-cip-response-paradigm="nback"';
+                }
+            }
+
             formHtml += `
-                <div class="mb-3 ${shouldDisable ? 'parameter-disabled' : ''}" data-param-name="${paramName}" ${responseGroup ? `data-response-group="${responseGroup}"` : ''} ${cueSubGroup ? `data-cue-subgroup="${cueSubGroup}"` : ''} ${feedbackSubGroup ? `data-feedback-subgroup="${feedbackSubGroup}"` : ''} ${dynamicTargetSubGroup ? `data-dynamic-target-subgroup="${dynamicTargetSubGroup}"` : ''} ${dependentDirectionSubGroup ? `data-dependent-direction-subgroup="${dependentDirectionSubGroup}"` : ''} ${blockTargetAttr} ${nbackParadigmAttr}>
+                <div class="mb-3 ${shouldDisable ? 'parameter-disabled' : ''}" data-param-name="${paramName}" ${responseGroup ? `data-response-group="${responseGroup}"` : ''} ${cueSubGroup ? `data-cue-subgroup="${cueSubGroup}"` : ''} ${feedbackSubGroup ? `data-feedback-subgroup="${feedbackSubGroup}"` : ''} ${dynamicTargetSubGroup ? `data-dynamic-target-subgroup="${dynamicTargetSubGroup}"` : ''} ${dependentDirectionSubGroup ? `data-dependent-direction-subgroup="${dependentDirectionSubGroup}"` : ''} ${blockTargetAttr} ${nbackParadigmAttr} ${cipResponseParadigmAttr}>
                     <label for="param_${paramName}" class="form-label ${shouldDisable ? 'text-muted' : ''}">
                         ${this.formatParameterNameForComponent(componentType, paramName)}
                         ${paramDef.required ? '<span class="text-danger">*</span>' : ''}
@@ -3306,6 +3336,55 @@ class TimelineBuilder {
                 stroopModeEl.addEventListener('change', updateStroopBlockResponseVisibility);
             }
             updateStroopBlockResponseVisibility();
+        }
+
+        // CIP Block: response paradigm conditional fields.
+        const cipResponseParadigmEl = formContainer.querySelector('#param_cip_response_paradigm');
+        const cipCategoryCountEl = formContainer.querySelector('#param_cip_category_count');
+        const updateCipResponseParadigmVisibility = () => {
+            if (!blockTypeEl) return;
+            const selected = (blockTypeEl.value || '').toString().trim();
+            if (selected !== 'continuous-image-presentation') return;
+
+            const paradigmRaw = (cipResponseParadigmEl ? cipResponseParadigmEl.value : 'categorization').toString().trim().toLowerCase();
+            const paradigm = (paradigmRaw === 'nback') ? 'nback' : 'categorization';
+
+            formContainer.querySelectorAll('[data-cip-response-paradigm]').forEach((el) => {
+                const want = (el.getAttribute('data-cip-response-paradigm') || '').toString().trim().toLowerCase();
+                const show = (want === paradigm);
+                el.style.display = show ? '' : 'none';
+                el.querySelectorAll('input, select, textarea').forEach((input) => {
+                    input.disabled = !show;
+                });
+            });
+
+            const countRaw = Number.parseInt((cipCategoryCountEl ? cipCategoryCountEl.value : '2').toString(), 10);
+            const count = Number.isFinite(countRaw) ? Math.max(2, Math.min(7, countRaw)) : 2;
+            for (let i = 1; i <= 7; i++) {
+                const showRow = (paradigm === 'categorization') && (i <= count);
+                ['label', 'key'].forEach((suffix) => {
+                    const row = formContainer.querySelector(`[data-param-name="cip_category_${i}_${suffix}"]`);
+                    if (!row) return;
+                    row.style.display = showRow ? '' : 'none';
+                    row.querySelectorAll('input, select, textarea').forEach((input) => {
+                        input.disabled = !showRow;
+                    });
+                });
+            }
+        };
+
+        if (cipResponseParadigmEl) {
+            cipResponseParadigmEl.addEventListener('change', updateCipResponseParadigmVisibility);
+            updateCipResponseParadigmVisibility();
+        }
+        if (cipCategoryCountEl) {
+            cipCategoryCountEl.addEventListener('change', updateCipResponseParadigmVisibility);
+            cipCategoryCountEl.addEventListener('input', updateCipResponseParadigmVisibility);
+            updateCipResponseParadigmVisibility();
+        }
+        if (blockTypeEl && (cipResponseParadigmEl || cipCategoryCountEl)) {
+            blockTypeEl.addEventListener('change', updateCipResponseParadigmVisibility);
+            updateCipResponseParadigmVisibility();
         }
 
         // Continuous Image Presentation (Block helper UI)
@@ -5916,6 +5995,64 @@ class TimelineBuilder {
                             } else {
                                 if (Object.prototype.hasOwnProperty.call(c, 'stroop_congruent_key')) delete c.stroop_congruent_key;
                                 if (Object.prototype.hasOwnProperty.call(c, 'stroop_incongruent_key')) delete c.stroop_incongruent_key;
+                            }
+                        }
+                    }
+
+                    if (blockType === 'continuous-image-presentation') {
+                        const containers = [];
+                        if (updatedData && typeof updatedData === 'object') containers.push(updatedData);
+                        if (updatedData.parameters && typeof updatedData.parameters === 'object') containers.push(updatedData.parameters);
+
+                        const paradigmRaw = (updatedData.cip_response_paradigm ?? updatedData.parameters?.cip_response_paradigm ?? 'categorization').toString().trim().toLowerCase();
+                        const paradigm = (paradigmRaw === 'nback') ? 'nback' : 'categorization';
+
+                        const countRaw = Number.parseInt((updatedData.cip_category_count ?? updatedData.parameters?.cip_category_count ?? '2').toString(), 10);
+                        const count = Number.isFinite(countRaw) ? Math.max(2, Math.min(7, countRaw)) : 2;
+
+                        for (const c of containers) {
+                            if (!c || typeof c !== 'object') continue;
+
+                            if (paradigm === 'nback') {
+                                if (Object.prototype.hasOwnProperty.call(c, 'cip_category_count')) delete c.cip_category_count;
+                                if (Object.prototype.hasOwnProperty.call(c, 'cip_show_category_buttons')) delete c.cip_show_category_buttons;
+                                for (let i = 1; i <= 7; i++) {
+                                    const labelKey = `cip_category_${i}_label`;
+                                    const keyKey = `cip_category_${i}_key`;
+                                    if (Object.prototype.hasOwnProperty.call(c, labelKey)) delete c[labelKey];
+                                    if (Object.prototype.hasOwnProperty.call(c, keyKey)) delete c[keyKey];
+                                }
+                            } else {
+                                const nbackKeys = [
+                                    'nback_n',
+                                    'nback_target_probability',
+                                    'nback_stimulus_mode',
+                                    'nback_stimulus_pool',
+                                    'nback_render_mode',
+                                    'nback_stimulus_template_html',
+                                    'nback_stimulus_duration_ms',
+                                    'nback_isi_duration_ms',
+                                    'nback_trial_duration_ms',
+                                    'nback_show_fixation_cross_between_trials',
+                                    'nback_response_paradigm',
+                                    'nback_response_device',
+                                    'nback_go_key',
+                                    'nback_match_key',
+                                    'nback_nonmatch_key',
+                                    'nback_show_buttons',
+                                    'nback_show_feedback',
+                                    'nback_feedback_duration_ms'
+                                ];
+                                nbackKeys.forEach((k) => {
+                                    if (Object.prototype.hasOwnProperty.call(c, k)) delete c[k];
+                                });
+
+                                for (let i = count + 1; i <= 7; i++) {
+                                    const labelKey = `cip_category_${i}_label`;
+                                    const keyKey = `cip_category_${i}_key`;
+                                    if (Object.prototype.hasOwnProperty.call(c, labelKey)) delete c[labelKey];
+                                    if (Object.prototype.hasOwnProperty.call(c, keyKey)) delete c[keyKey];
+                                }
                             }
                         }
                     }

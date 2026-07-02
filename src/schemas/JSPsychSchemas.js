@@ -2409,6 +2409,111 @@ class JSPsychSchemas {
                         blockTarget: 'continuous-image-presentation',
                         description: 'CIP: comma-separated response keys'
                     },
+                    cip_response_paradigm: {
+                        type: this.parameterTypes.SELECT,
+                        default: 'categorization',
+                        options: ['categorization', 'nback'],
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP: participant response mode. Use categorization keys or N-back scoring over the CIP image stream.'
+                    },
+                    cip_category_count: {
+                        type: this.parameterTypes.INT,
+                        default: 2,
+                        min: 2,
+                        max: 7,
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: number of active categories (2 required, up to 7 total).'
+                    },
+                    cip_show_category_buttons: {
+                        type: this.parameterTypes.BOOL,
+                        default: false,
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: show clickable category buttons in addition to keyboard keys.'
+                    },
+                    cip_category_1_label: {
+                        type: this.parameterTypes.STRING,
+                        default: 'Category 1',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: label for category 1.'
+                    },
+                    cip_category_1_key: {
+                        type: this.parameterTypes.STRING,
+                        default: 'f',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: response key for category 1.'
+                    },
+                    cip_category_2_label: {
+                        type: this.parameterTypes.STRING,
+                        default: 'Category 2',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: label for category 2.'
+                    },
+                    cip_category_2_key: {
+                        type: this.parameterTypes.STRING,
+                        default: 'j',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: response key for category 2.'
+                    },
+                    cip_category_3_label: {
+                        type: this.parameterTypes.STRING,
+                        default: 'Category 3',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: label for category 3 (optional).'
+                    },
+                    cip_category_3_key: {
+                        type: this.parameterTypes.STRING,
+                        default: '1',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: response key for category 3 (optional).'
+                    },
+                    cip_category_4_label: {
+                        type: this.parameterTypes.STRING,
+                        default: 'Category 4',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: label for category 4 (optional).'
+                    },
+                    cip_category_4_key: {
+                        type: this.parameterTypes.STRING,
+                        default: '2',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: response key for category 4 (optional).'
+                    },
+                    cip_category_5_label: {
+                        type: this.parameterTypes.STRING,
+                        default: 'Category 5',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: label for category 5 (optional).'
+                    },
+                    cip_category_5_key: {
+                        type: this.parameterTypes.STRING,
+                        default: '3',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: response key for category 5 (optional).'
+                    },
+                    cip_category_6_label: {
+                        type: this.parameterTypes.STRING,
+                        default: 'Category 6',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: label for category 6 (optional).'
+                    },
+                    cip_category_6_key: {
+                        type: this.parameterTypes.STRING,
+                        default: '4',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: response key for category 6 (optional).'
+                    },
+                    cip_category_7_label: {
+                        type: this.parameterTypes.STRING,
+                        default: 'Category 7',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: label for category 7 (optional).'
+                    },
+                    cip_category_7_key: {
+                        type: this.parameterTypes.STRING,
+                        default: '5',
+                        blockTarget: 'continuous-image-presentation',
+                        description: 'CIP categorization: response key for category 7 (optional).'
+                    },
                     cip_asset_filenames: {
                         type: this.parameterTypes.STRING,
                         default: '',
@@ -2440,7 +2545,7 @@ class JSPsychSchemas {
                         default: 2,
                         min: 1,
                         max: 6,
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'N-back depth'
                     },
                     nback_target_probability: {
@@ -2448,33 +2553,33 @@ class JSPsychSchemas {
                         default: 0.25,
                         min: 0,
                         max: 1,
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Probability an item is forced to match the item N-back'
                     },
                     nback_stimulus_mode: {
                         type: this.parameterTypes.SELECT,
                         default: 'letters',
                         options: ['letters', 'numbers', 'shapes', 'custom'],
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Token set to use (custom uses the custom pool string)'
                     },
                     nback_stimulus_pool: {
                         type: this.parameterTypes.STRING,
                         default: '',
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Custom pool tokens (comma/newline separated); used when stimulus_mode=custom'
                     },
                     nback_render_mode: {
                         type: this.parameterTypes.SELECT,
                         default: 'token',
                         options: ['token', 'custom_html'],
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Whether to render raw token text or use a custom HTML template'
                     },
                     nback_stimulus_template_html: {
                         type: this.parameterTypes.HTML_STRING,
                         default: '<div style="font-size:72px; font-weight:700; letter-spacing:0.02em;">{{TOKEN}}</div>',
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'HTML template used when render_mode=custom_html. Variable: {{TOKEN}}'
                     },
                     nback_stimulus_duration_ms: {
@@ -2482,7 +2587,7 @@ class JSPsychSchemas {
                         default: 500,
                         min: 0,
                         max: 60000,
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Stimulus display duration (ms)'
                     },
                     nback_isi_duration_ms: {
@@ -2490,7 +2595,7 @@ class JSPsychSchemas {
                         default: 700,
                         min: 0,
                         max: 60000,
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Inter-stimulus interval duration (ms)'
                     },
                     nback_trial_duration_ms: {
@@ -2498,57 +2603,57 @@ class JSPsychSchemas {
                         default: 1200,
                         min: 0,
                         max: 60000,
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Total item/trial duration (ms)'
                     },
                     nback_show_fixation_cross_between_trials: {
                         type: this.parameterTypes.BOOL,
                         default: false,
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Show a fixation cross (+) when the token is hidden (during ISI/ITI between items)'
                     },
                     nback_response_paradigm: {
                         type: this.parameterTypes.SELECT,
                         default: 'go_nogo',
                         options: ['go_nogo', '2afc'],
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'go_nogo: respond on matches; 2afc: match vs non-match keys'
                     },
                     nback_response_device: {
                         type: this.parameterTypes.SELECT,
                         default: 'inherit',
                         options: ['inherit', 'keyboard', 'mouse'],
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Response device used by generated N-back items'
                     },
                     nback_go_key: {
                         type: this.parameterTypes.STRING,
                         default: 'space',
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Go key for matches (go/no-go)'
                     },
                     nback_match_key: {
                         type: this.parameterTypes.STRING,
                         default: 'j',
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Match key (2AFC)'
                     },
                     nback_nonmatch_key: {
                         type: this.parameterTypes.STRING,
                         default: 'f',
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Non-match key (2AFC)'
                     },
                     nback_show_buttons: {
                         type: this.parameterTypes.BOOL,
                         default: true,
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Show clickable buttons when using mouse'
                     },
                     nback_show_feedback: {
                         type: this.parameterTypes.BOOL,
                         default: false,
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Show correctness feedback after response/timeout'
                     },
                     nback_feedback_duration_ms: {
@@ -2556,7 +2661,7 @@ class JSPsychSchemas {
                         default: 250,
                         min: 0,
                         max: 5000,
-                        blockTarget: 'nback-block',
+                        blockTarget: 'nback-block,continuous-image-presentation',
                         description: 'Feedback duration (ms)'
                     },
 
